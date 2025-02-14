@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import '../lib/exercicio14.dart';
+import 'package:exercicio14/exercicio14.dart';
 
 void main() {
   setUp(() {

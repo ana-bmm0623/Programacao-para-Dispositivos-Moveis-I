@@ -11,7 +11,5 @@ void main(List<String> arguments) {
   stdout.write('Digite um int para se converter em double: ');
   stdin.readLineSync();
   var num2 = int.parse(stdin.readLineSync()!);
-  print(
-    
-      'O int $num2 convertido em double é: ${exercicio4.parseIntToDouble(num2)}');
+  print('O int $num2 convertido em double é: ${exercicio4.parseIntToDouble(num2)}');
 }
