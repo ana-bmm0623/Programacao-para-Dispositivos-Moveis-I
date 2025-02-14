@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import '../lib/exercicio11.dart';
+import 'package:exercicio11/exercicio11.dart';
 
 void main() {
   test('soma de 1 e 2 deve ser 3', () {
