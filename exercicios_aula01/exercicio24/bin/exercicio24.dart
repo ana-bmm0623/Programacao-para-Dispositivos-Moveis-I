@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 void main() async {
-  var url = Uri.parse('http://172.16.91.80:8080/Pessoas/cpf/1');
+  var url = Uri.parse('http://172.16.91.80:8080/Pessoas');
 
   var response = await http.get(url);
 
