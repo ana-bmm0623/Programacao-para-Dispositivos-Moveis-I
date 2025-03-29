@@ -78,6 +78,8 @@ void main() {
 }
 
 class ListaCompras extends StatefulWidget {
+  const ListaCompras({super.key});
+
   @override
   _ListaComprasState createState() => _ListaComprasState();
 }
@@ -162,7 +164,7 @@ class Item {
 class ItemListaCompras extends StatelessWidget {
   final Item item;
 
-  ItemListaCompras({required this.item});
+  const ItemListaCompras({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {

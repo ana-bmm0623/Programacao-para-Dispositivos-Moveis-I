@@ -1,122 +1,362 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ListaComprasApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ListaComprasApp extends StatelessWidget {
+  const ListaComprasApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ListaComprasScaffold(),
+      theme: ThemeData(primarySwatch: Colors.blue),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class ListaComprasScaffold extends StatelessWidget {
+  const ListaComprasScaffold({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Lista de Compras'),
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      body: const FormularioComprasScaffold(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Configurações',
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: () {
+          FormularioComprasScaffold.show(context);
+        },
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
+
+class ListaCompras extends StatelessWidget {
+  const ListaCompras({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final produtos = [
+      Produto("Café", 2),
+      Produto("Leite", 1),
+      Produto("Pão", 5),
+      Produto("Queijo", 3),
+      Produto("Presunto", 4),
+      Produto("Manteiga", 2),
+      Produto("Açúcar", 1),
+      Produto("Arroz", 10),
+      Produto("Feijão", 5),
+      Produto("Macarrão", 3),
+    ];
+
+    return ListView.builder(
+      itemCount: produtos.length,
+      itemBuilder: (context, index) {
+        return ItemListaCompras(produto: produtos[index]);
+      },
+    );
+  }
+}
+
+class ItemListaCompras extends StatelessWidget {
+  final Produto produto;
+
+  const ItemListaCompras({required this.produto, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: ListTile(
+        leading: const Icon(Icons.shopping_cart),
+        title: Text(produto.nome),
+        subtitle: Text('Quantidade: ${produto.quantidade}'),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            // Ação do botão de deletar
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class Produto {
+  final String nome;
+  final int quantidade;
+
+  Produto(this.nome, this.quantidade);
+}
+
+
+class FormularioComprasScaffold extends StatelessWidget {
+  const FormularioComprasScaffold({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Cadastro de Produto'),
+        backgroundColor: Colors.grey.shade50,
+      ),
+      body: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Nome do Produto',
+                hintText: 'Ex: Café',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Quantidade',
+                hintText: 'Ex: 2',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+             
+            },
+            child: const Text('Salvar'),
+          ),
+        ],
+      )
+    );
+  }
+  
+  static void show(BuildContext context) {}
+}
+
+
+
+
+// import 'package:flutter/material.dart';
+
+// void main() {
+//   runApp(const ListaComprasApp());
+// }
+
+// class ListaComprasApp extends StatelessWidget {
+//   const ListaComprasApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Lista de Compras',
+//       theme: ThemeData(primarySwatch: Colors.blue),
+//       debugShowCheckedModeBanner: false,
+//       home: const ListaComprasScaffold(),
+//     );
+//   }
+// }
+
+// class ListaComprasScaffold extends StatefulWidget {
+//   const ListaComprasScaffold({super.key});
+
+//   @override
+//   State<ListaComprasScaffold> createState() => _ListaComprasScaffoldState();
+// }
+
+// class _ListaComprasScaffoldState extends State<ListaComprasScaffold> {
+//   final List<Produto> _produtos = [
+//     Produto("Café", 2),
+//     Produto("Leite", 1),
+//     Produto("Pão", 5),
+//     Produto("Queijo", 3),
+//     Produto("Presunto", 4),
+//     Produto("Manteiga", 2),
+//     Produto("Açúcar", 1),
+//     Produto("Arroz", 10),
+//     Produto("Feijão", 5),
+//     Produto("Macarrão", 3),
+//   ];
+
+//   void _adicionarProduto(Produto produto) {
+//     setState(() {
+//       _produtos.add(produto);
+//     });
+//   }
+
+//   void _removerProduto(int index) {
+//     setState(() {
+//       _produtos.removeAt(index);
+//     });
+//   }
+
+//   Future<void> _abrirFormulario() async {
+//     final Produto? novoProduto = await FormularioComprasScaffold.show(context);
+//     if (novoProduto != null) {
+//       _adicionarProduto(novoProduto);
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Lista de Compras'),
+//         backgroundColor: Colors.blueAccent,
+//       ),
+//       body: ListView.builder(
+//         itemCount: _produtos.length,
+//         itemBuilder: (context, index) {
+//           return ItemListaCompras(
+//             produto: _produtos[index],
+//             onDelete: () => _removerProduto(index),
+//           );
+//         },
+//       ),
+//       bottomNavigationBar: BottomNavigationBar(
+//         items: const [
+//           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
+//           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Configurações'),
+//         ],
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: _abrirFormulario,
+//         child: const Icon(Icons.add),
+//       ),
+//     );
+//   }
+// }
+
+// class ItemListaCompras extends StatelessWidget {
+//   final Produto produto;
+//   final VoidCallback onDelete;
+
+//   const ItemListaCompras({
+//     required this.produto,
+//     required this.onDelete,
+//     super.key,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Card(
+//       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+//       child: ListTile(
+//         leading: const Icon(Icons.shopping_cart),
+//         title: Text(produto.nome),
+//         subtitle: Text('Quantidade: ${produto.quantidade}'),
+//         trailing: IconButton(
+//           icon: const Icon(Icons.delete),
+//           onPressed: onDelete,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class Produto {
+//   final String nome;
+//   final int quantidade;
+
+//   Produto(this.nome, this.quantidade);
+// }
+
+// class FormularioComprasScaffold extends StatelessWidget {
+//   const FormularioComprasScaffold({super.key});
+
+//   static Future<Produto?> show(BuildContext context) {
+//     return Navigator.of(context).push<Produto>(
+//       MaterialPageRoute(
+//         builder: (context) => const FormularioComprasScaffold(),
+//         fullscreenDialog: true,
+//       ),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final _formKey = GlobalKey<FormState>();
+//     final TextEditingController _nomeController = TextEditingController();
+//     final TextEditingController _quantidadeController = TextEditingController();
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Cadastro de Produto'),
+//         backgroundColor: Colors.blue,
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Form(
+//           key: _formKey,
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               TextFormField(
+//                 controller: _nomeController,
+//                 decoration: const InputDecoration(
+//                   labelText: 'Nome do Produto',
+//                   border: OutlineInputBorder(),
+//                 ),
+//                 validator: (value) {
+//                   if (value == null || value.isEmpty) {
+//                     return 'Informe o nome do produto';
+//                   }
+//                   return null;
+//                 },
+//               ),
+//               const SizedBox(height: 16),
+//               TextFormField(
+//                 controller: _quantidadeController,
+//                 decoration: const InputDecoration(
+//                   labelText: 'Quantidade',
+//                   border: OutlineInputBorder(),
+//                 ),
+//                 keyboardType: TextInputType.number,
+//                 validator: (value) {
+//                   if (value == null || value.isEmpty) {
+//                     return 'Informe a quantidade';
+//                   }
+//                   if (int.tryParse(value) == null) {
+//                     return 'Número inválido';
+//                   }
+//                   return null;
+//                 },
+//               ),
+//               const SizedBox(height: 16),
+//               ElevatedButton(
+//                 onPressed: () {
+//                   if (_formKey.currentState?.validate() == true) {
+//                     final String nome = _nomeController.text;
+//                     final int quantidade = int.parse(_quantidadeController.text);
+//                     final novoProduto = Produto(nome, quantidade);
+//                     Navigator.pop(context, novoProduto);
+//                   }
+//                 },
+//                 child: const Text('Salvar'),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
