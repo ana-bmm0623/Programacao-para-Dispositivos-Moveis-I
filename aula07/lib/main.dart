@@ -27,7 +27,7 @@ class ListaComprasScaffold extends StatelessWidget {
         title: const Text('Lista de Compras'),
         backgroundColor: Colors.blueAccent,
       ),
-      body: const FormularioComprasScaffold(),
+      body: FormularioComprasScaffold(),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
@@ -39,7 +39,22 @@ class ListaComprasScaffold extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          FormularioComprasScaffold.show(context);
+          final Future future = Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FormularioComprasScaffold(),
+            ),
+          );
+          future.then((novoProduto) {
+            if (novoProduto != null) {
+              // Adicionar o produto à lista de compras
+              // Aqui você pode implementar a lógica para adicionar o produto
+              // à lista de compras, como atualizar o estado do widget pai.
+              print(
+                'Produto adicionado: ${novoProduto.nome}, Quantidade: ${novoProduto.quantidade}',
+              );
+            }
+          });
         },
         child: const Icon(Icons.add),
       ),
@@ -105,9 +120,11 @@ class Produto {
   Produto(this.nome, this.quantidade);
 }
 
-
 class FormularioComprasScaffold extends StatelessWidget {
-  const FormularioComprasScaffold({super.key});
+  final TextEditingController nomeController = TextEditingController();
+  final TextEditingController quantidadeController = TextEditingController();
+
+  FormularioComprasScaffold({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -118,20 +135,22 @@ class FormularioComprasScaffold extends StatelessWidget {
       ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
-              decoration: InputDecoration(
+              controller: nomeController,
+              decoration: const InputDecoration(
                 labelText: 'Nome do Produto',
                 hintText: 'Ex: Café',
                 border: OutlineInputBorder(),
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
-              decoration: InputDecoration(
+              controller: quantidadeController,
+              decoration: const InputDecoration(
                 labelText: 'Quantidade',
                 hintText: 'Ex: 2',
                 border: OutlineInputBorder(),
@@ -141,15 +160,21 @@ class FormularioComprasScaffold extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-             
+              String nome = nomeController.text;
+              int quantidade = int.parse(quantidadeController.text);
+
+              Produto novoProduto = Produto(nome, quantidade);
+
+              Navigator.pop(context, novoProduto);
+              // Adicionar o produto à lista de compras
             },
             child: const Text('Salvar'),
           ),
         ],
-      )
+      ),
     );
   }
-  
+
   static void show(BuildContext context) {}
 }
 
