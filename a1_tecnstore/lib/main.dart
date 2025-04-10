@@ -13,7 +13,14 @@ class ListaComprasApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const ListaObjetosScaffold(),
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 2),
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -65,8 +72,13 @@ class _ListaObjetosScaffoldState extends State<ListaObjetosScaffold> {
         setState(() {
           _objetos.add(novoObjeto);
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Objeto cadastrado com sucesso!")),
+        );
       } catch (e) {
-        print("Erro ao criar objeto: $e");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Erro ao criar objeto: $e")));
       }
     }
   }
@@ -89,87 +101,109 @@ class _ListaObjetosScaffoldState extends State<ListaObjetosScaffold> {
         setState(() {
           _objetos[index] = resultado;
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Objeto atualizado com sucesso!")),
+        );
       } catch (e) {
-        print("Erro ao atualizar objeto: $e");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Erro ao atualizar objeto: $e")));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lista de Objetos'),
-        backgroundColor: Colors.blueAccent,
-      ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : RefreshIndicator(
-                onRefresh: () async {
-                  _carregarObjetos();
-                },
-                child: ListView.builder(
-                  itemCount: _objetos.length,
-                  itemBuilder: (context, index) {
-                    return ItemListaObjetos(
-                      objeto: _objetos[index],
-                      onDelete: () async {
-                        // Exibe o diálogo de confirmação
-                        bool? confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Confirmar Exclusão"),
-                              content: const Text(
-                                "Tem certeza que deseja excluir este objeto?",
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed:
-                                      () => Navigator.of(context).pop(false),
-                                  child: const Text("Cancelar"),
-                                ),
-                                TextButton(
-                                  onPressed:
-                                      () => Navigator.of(context).pop(true),
-                                  child: const Text(
-                                    "Excluir",
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                        if (confirm == true) {
-                          try {
-                            await apiService.deleteObjeto(_objetos[index].id!);
-                            setState(() {
-                              _objetos.removeAt(index);
-                            });
-                          } catch (e) {
-                            print("Erro ao excluir objeto: $e");
-                          }
-                        }
-                      },
-                      onUpdate: () => _atualizarObjeto(index),
-                    );
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Lista de Objetos'),
+          backgroundColor: Colors.blueAccent,
+        ),
+        body:
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                  onRefresh: () async {
+                    _carregarObjetos();
                   },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 12,
+                    ),
+                    itemCount: _objetos.length,
+                    itemBuilder: (context, index) {
+                      return ItemListaObjetos(
+                        objeto: _objetos[index],
+                        onDelete: () async {
+                          bool? confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Confirmar Exclusão"),
+                                content: const Text(
+                                  "Tem certeza que deseja excluir este objeto?",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(false),
+                                    child: const Text("Cancelar"),
+                                  ),
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(true),
+                                    child: const Text(
+                                      "Excluir",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          if (confirm == true) {
+                            try {
+                              await apiService.deleteObjeto(
+                                _objetos[index].id!,
+                              );
+                              setState(() {
+                                _objetos.removeAt(index);
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Objeto excluído com sucesso!"),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Erro ao excluir objeto: $e"),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        onUpdate: () => _atualizarObjeto(index),
+                      );
+                    },
+                  ),
                 ),
-              ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Configurações',
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _adicionarObjeto,
-        child: const Icon(Icons.add),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 0,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Configurações',
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _adicionarObjeto,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
@@ -192,32 +226,58 @@ class ItemListaObjetos extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        leading: const Icon(Icons.computer, color: Colors.blueAccent, size: 32),
-        title: Text(
-          objeto.name,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        subtitle: Text(
-          "Ano: ${objeto.year} - Preço: R\$ ${objeto.price.toStringAsFixed(2)}\nCPU: ${objeto.cpuModel}\nHD: ${objeto.hardDiskSize}" +
-              (objeto.color != null ? " - Cor: ${objeto.color}" : ""),
-          style: const TextStyle(fontSize: 14),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.orange, size: 28),
-              onPressed: onUpdate,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: ListTile(
+          leading: const Icon(
+            Icons.computer,
+            color: Colors.blueAccent,
+            size: 32,
+          ),
+          title: Text(
+            objeto.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Ano: ${objeto.year}  •  Preço: R\$ ${objeto.price.toStringAsFixed(2)}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "CPU: ${objeto.cpuModel}  •  HD: ${objeto.hardDiskSize}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                if (objeto.color != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      "Cor: ${objeto.color}",
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+              ],
             ),
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red, size: 28),
-              onPressed: onDelete,
-            ),
-          ],
+          ),
+          trailing: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.orange, size: 28),
+                onPressed: onUpdate,
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red, size: 28),
+                onPressed: onDelete,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -336,92 +396,165 @@ class RestfulApiService {
 }
 
 // Tela de formulário para cadastro ou atualização de um objeto
-class FormularioObjetoScaffold extends StatelessWidget {
+class FormularioObjetoScaffold extends StatefulWidget {
   final Objeto? objeto;
-
   const FormularioObjetoScaffold({super.key, this.objeto});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController nameController = TextEditingController(
-      text: objeto?.name ?? '',
-    );
-    final TextEditingController yearController = TextEditingController(
-      text: objeto != null ? objeto!.year.toString() : '',
-    );
-    final TextEditingController priceController = TextEditingController(
-      text: objeto != null ? objeto!.price.toString() : '',
-    );
-    final TextEditingController cpuModelController = TextEditingController(
-      text: objeto?.cpuModel ?? '',
-    );
-    final TextEditingController hardDiskSizeController = TextEditingController(
-      text: objeto?.hardDiskSize ?? '',
-    );
-    final TextEditingController colorController = TextEditingController(
-      text: objeto?.color ?? '',
-    );
+  State<FormularioObjetoScaffold> createState() =>
+      _FormularioObjetoScaffoldState();
+}
 
+class _FormularioObjetoScaffoldState extends State<FormularioObjetoScaffold> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController nameController;
+  late TextEditingController yearController;
+  late TextEditingController priceController;
+  late TextEditingController cpuModelController;
+  late TextEditingController hardDiskSizeController;
+  late TextEditingController colorController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: widget.objeto?.name ?? '');
+    yearController = TextEditingController(
+      text: widget.objeto != null ? widget.objeto!.year.toString() : '',
+    );
+    priceController = TextEditingController(
+      text: widget.objeto != null ? widget.objeto!.price.toString() : '',
+    );
+    cpuModelController = TextEditingController(
+      text: widget.objeto?.cpuModel ?? '',
+    );
+    hardDiskSizeController = TextEditingController(
+      text: widget.objeto?.hardDiskSize ?? '',
+    );
+    colorController = TextEditingController(text: widget.objeto?.color ?? '');
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    yearController.dispose();
+    priceController.dispose();
+    cpuModelController.dispose();
+    hardDiskSizeController.dispose();
+    colorController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      final novoObjeto = Objeto(
+        name: nameController.text,
+        year: int.tryParse(yearController.text) ?? 0,
+        price: double.tryParse(priceController.text) ?? 0.0,
+        cpuModel: cpuModelController.text,
+        hardDiskSize: hardDiskSizeController.text,
+        color: colorController.text.isNotEmpty ? colorController.text : null,
+      );
+      Navigator.pop(context, novoObjeto);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          objeto == null ? 'Cadastro de Objeto' : 'Atualização de Objeto',
+          widget.objeto == null
+              ? 'Cadastro de Objeto'
+              : 'Atualização de Objeto',
         ),
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: Colors.blueAccent,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildTextField(nameController, 'Nome', 'Ex: Apple MacBook Pro 16'),
-            _buildTextField(
-              yearController,
-              'Ano',
-              'Ex: 2019',
-              keyboardType: TextInputType.number,
+      // Aqui definimos resizeToAvoidBottomInset como true (valor padrão)
+      // e ajustamos o padding inferior do SingleChildScrollView com
+      // MediaQuery para compensar o teclado.
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            top: 16.0,
+            left: 16.0,
+            right: 16.0,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildTextField(
+                  nameController,
+                  'Nome',
+                  'Ex: Apple MacBook Pro 16',
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Digite o nome do objeto';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  yearController,
+                  'Ano',
+                  'Ex: 2019',
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Digite o ano';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  priceController,
+                  'Preço',
+                  'Ex: 1849.99',
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Digite o preço';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  cpuModelController,
+                  'CPU model',
+                  'Ex: Intel Core i9',
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Digite o modelo da CPU';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  hardDiskSizeController,
+                  'Hard disk size',
+                  'Ex: 1 TB',
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Digite o tamanho do HD';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  colorController,
+                  'Cor (opcional)',
+                  'Ex: Silver',
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _submit,
+                    child: Text(widget.objeto == null ? 'Salvar' : 'Atualizar'),
+                  ),
+                ),
+              ],
             ),
-            _buildTextField(
-              priceController,
-              'Preço',
-              'Ex: 1849.99',
-              keyboardType: TextInputType.number,
-            ),
-            _buildTextField(
-              cpuModelController,
-              'CPU model',
-              'Ex: Intel Core i9',
-            ),
-            _buildTextField(
-              hardDiskSizeController,
-              'Hard disk size',
-              'Ex: 1 TB',
-            ),
-            _buildTextField(colorController, 'Cor (opcional)', 'Ex: silver'),
-            ElevatedButton(
-              onPressed: () {
-                String name = nameController.text;
-                int year = int.tryParse(yearController.text) ?? 0;
-                double price = double.tryParse(priceController.text) ?? 0.0;
-                String cpuModel = cpuModelController.text;
-                String hardDiskSize = hardDiskSizeController.text;
-                String? color =
-                    colorController.text.isNotEmpty
-                        ? colorController.text
-                        : null;
-
-                Objeto novoObjeto = Objeto(
-                  name: name,
-                  year: year,
-                  price: price,
-                  cpuModel: cpuModel,
-                  hardDiskSize: hardDiskSize,
-                  color: color,
-                );
-
-                Navigator.pop(context, novoObjeto);
-              },
-              child: Text(objeto == null ? 'Salvar' : 'Atualizar'),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -432,18 +565,13 @@ class FormularioObjetoScaffold extends StatelessWidget {
     String label,
     String hint, {
     TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
   }) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          border: const OutlineInputBorder(),
-        ),
-        keyboardType: keyboardType,
-      ),
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      decoration: InputDecoration(labelText: label, hintText: hint),
     );
   }
 }
