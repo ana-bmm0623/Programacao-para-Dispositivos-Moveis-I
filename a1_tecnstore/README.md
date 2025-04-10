@@ -1,111 +1,69 @@
-a1_tecnstore
+# a1_tecnstore
 
-Este projeto é um aplicativo Flutter para gerenciamento de uma lista de objetos, demonstrando como integrar uma aplicação mobile com uma API RESTful para realizar operações de CRUD (criar, ler, atualizar e excluir).
-Visão Geral
+Este projeto é um aplicativo Flutter para gerenciamento de uma lista de objetos, demonstrando como integrar uma aplicação mobile com uma API RESTful para executar operações de CRUD (criar, ler, atualizar e excluir).
 
-O a1_tecnstore é um exemplo prático que ensina conceitos fundamentais do desenvolvimento com Flutter, como:
+---
 
-    Listagem de Objetos: Exibe os dados obtidos de uma API.
+## Visão Geral
 
-    Cadastro de Objetos: Permite a criação de novos itens usando um formulário interativo.
+O **a1_tecnstore** é um exemplo prático que ilustra conceitos fundamentais do desenvolvimento com Flutter:
 
-    Atualização e Exclusão: Possibilita a edição e remoção dos registros existentes com feedback visual e confirmação de ações.
+- **Listagem de Objetos:** Exibe os dados obtidos de uma API.
+- **Cadastro de Objetos:** Permite a criação de novos itens através de um formulário interativo.
+- **Atualização e Exclusão:** Possibilita a edição e remoção dos registros existentes com feedback visual e confirmação de ações.
+- **Integração com API RESTful:** Consome serviços HTTP utilizando a biblioteca `http` para comunicação com o backend.
 
-    Integração com API RESTful: Consumo dos serviços HTTP utilizando a biblioteca http para comunicação com o backend.
+---
 
-Funcionalidades
+## Funcionalidades
 
-    Exibição Dinâmica: Carrega e atualiza a lista de objetos diretamente do serviço RESTful.
+- **Exibição Dinâmica:** Carrega e atualiza a lista de objetos diretamente do serviço RESTful.
+- **Formulário de Cadastro/Atualização:** Interface intuitiva para inserir ou alterar informações dos objetos.
+- **Confirmação para Exclusão:** Diálogo de confirmação antes da remoção de um registro.
+- **Refresh Manual:** Atualiza a lista de itens por meio de gesto _pull-to-refresh_.
 
-    Formulário de Cadastro/Atualização: Interface intuitiva para inserir ou alterar as informações dos objetos.
+---
 
-    Confirmação para Exclusão: Diálogo de confirmação antes da remoção de um registro.
+## Tecnologias Utilizadas
 
-    Refresh Manual: Atualiza a lista de itens via gesto pull-to-refresh.
+- **[Flutter](https://flutter.dev):** Framework para desenvolvimento de aplicações mobile.
+- **Dart:** Linguagem de programação utilizada para desenvolver o app.
+- **http:** Biblioteca para realizar requisições HTTP.
+- **API RESTful:** Gerencia os dados dos objetos (a URL base é definida como `https://api.restful-api.dev/objects`).
 
-Tecnologias Utilizadas
+---
 
-    Flutter: Framework de desenvolvimento para aplicações mobile.
+## Pré-requisitos
 
-    Dart: Linguagem de programação utilizada no Flutter.
+- **Flutter SDK:** Tenha o Flutter instalado. Consulte a [documentação oficial](https://docs.flutter.dev/) para mais detalhes.
+- **Emulador ou Dispositivo Real:** Configure um dispositivo para testar o aplicativo.
+- **Acesso à API:** Certifique-se de que a API RESTful está disponível e, se necessário, atualize a URL base no `RestfulApiService`.
 
-    http: Biblioteca para realizar requisições HTTP.
+---
 
-    API RESTful: Utilizada para gerenciar os dados dos objetos (a URL base está definida como https://api.restful-api.dev/objects).
+## Instalando e Executando
 
-Pré-requisitos
+1. **Clone o repositório:**
 
-    Flutter SDK: Certifique-se de que o Flutter está instalado. Consulte a documentação oficial para mais detalhes.
+   ```bash
+   git clone https://github.com/ana-bmm0623/Programacao-para-Dispositivos-Moveis-I/edit/main/a1_tecnstore
+   cd a1_tecnstore
 
-    Emulador ou Dispositivo Real: Configure um dispositivo para testar o aplicativo.
+2. **Instale as dependências:**
 
-    Acesso à API: Verifique se a API RESTful está disponível e, se necessário, atualize a URL base em RestfulApiService.
+   ```bash
+   flutter pub get
 
-Instalando e Executando
 
-    Clone o repositório:
+3. **Execute o aplicativo:**
 
-git clone <URL_DO_SEU_REPOSITÓRIO>
-cd a1_tecnstore
+   ```bash
+   flutter run
 
-Instale as dependências:
-
-flutter pub get
-
-Execute o aplicativo:
-
-    flutter run
-
-Estrutura do Projeto
-
-A organização do projeto é a seguinte:
-
+## Estrutura do Projeto
+   ```bash
 a1_tecnstore/
 ├── lib/
 │   ├── main.dart                # Ponto de entrada e lógica principal do app.
-│   ├── widgets/                 # Widgets customizados, como o item da lista e formulários.
-│   └── models/                  # Modelos de dados e serviços (ex.: Objeto e RestfulApiService).
 ├── pubspec.yaml                 # Configurações e dependências do projeto.
 └── README.md                    # Este arquivo.
-
-Detalhes da Implementação
-
-    Listagem de Objetos:
-    O aplicativo inicia com uma requisição GET à API, exibindo todos os objetos cadastrados. Em caso de erro, o carregamento é interrompido e uma mensagem de erro é impressa no console.
-
-    Cadastro e Atualização:
-    A tela de formulário (FormularioObjetoScaffold) é responsável por captar os dados de um novo objeto ou atualizar um existente. Após a inserção ou alteração, os dados são enviados para a API com métodos POST ou PUT.
-
-    Exclusão de Objetos:
-    Cada item da lista possui botões para atualizar ou excluir, onde a exclusão requer confirmação por meio de um AlertDialog.
-
-Exemplo de Código
-
-void main() {
-  runApp(const ListaComprasApp());
-}
-
-O trecho acima inicia o aplicativo, que utiliza a classe ListaComprasApp para definir o tema e a tela principal.
-Personalizações
-
-    Tema e Estilo:
-    O tema padrão é baseado em Colors.blue, podendo ser ajustado conforme a identidade visual desejada para o app.
-
-    API Base URL:
-    Atualmente, a URL para a API está definida em RestfulApiService como https://api.restful-api.dev/objects. Caso a API seja alterada ou haja necessidade de endpoints diferentes, atualize este valor.
-
-Contribuição
-
-Contribuições são muito bem-vindas! Se você deseja sugerir melhorias ou corrigir algum problema, sinta-se à vontade para:
-
-    Abrir uma issue detalhando o problema ou sugestão.
-
-    Enviar um pull request com as alterações propostas.
-
-Recursos Adicionais
-
-    Documentação Flutter
-
-    Codelab Flutter - Escreva seu primeiro app Flutter
-
-    Cookbook Flutter - Exemplos úteis
